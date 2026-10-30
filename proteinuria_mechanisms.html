@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mechanisms of pathologic proteinuria</title>
+<style>
+:root{--bg:#f7f8f6;--card:#fff;--ink:#1d2a2a;--ink2:#566362;--line:#c9d1cf;--acc:#0f6e56;--accbg:#e1f5ee;--danger:#a32d2d;--urine:#faeeda;--filt:#566362}
+@media (prefers-color-scheme:dark){:root{--bg:#161b1b;--card:#1f2626;--ink:#e8eeec;--ink2:#9fb0ad;--line:#3a4645;--acc:#5dcaa5;--accbg:#04342c;--danger:#f09595;--urine:#412402;--filt:#9fb0ad}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 16px 40px}
+h1{font-size:22px;font-weight:600;margin:0 0 4px}
+.sub{color:var(--ink2);font-size:14px;margin:0 0 16px}
+#tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+button{font:inherit;font-size:14px;padding:6px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;cursor:pointer}
+button:hover{border-color:var(--ink2)}
+button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button.on{background:var(--accbg);border-color:var(--acc);color:var(--acc)}
+#desc{font-size:15px;color:var(--ink2);min-height:50px;margin:0 0 8px}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px}
+svg{display:block;width:100%;height:auto}
+svg text{font-size:12px;fill:var(--ink2);font-family:inherit}
+#leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink2);margin:12px 0}
+#leg span{display:flex;align-items:center;gap:6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.card small{display:block;font-size:13px;color:var(--ink2)}
+.card b{font-size:18px;font-weight:600}
+</style>
+</head>
+<body>
+<main>
+<h1>Mechanisms of pathologic proteinuria</h1>
+<p class="sub">Animated version of Figure 5-4. Choose a mechanism to watch where proteins are held back, reabsorbed or lost.</p>
+<div id="tabs"></div>
+<p id="desc"></p>
+<div class="stage">
+<svg id="pg" viewBox="0 0 680 480" role="img" aria-label="Glomerular filter, proximal tubule and urine with animated protein particles">
+<path d="M205 20 L205 88 Q205 112 235 112 L445 112 Q475 112 475 88 L475 20" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+<g id="filt"></g>
+<g id="cells"></g>
+<path d="M273 300 L330 345 L330 372 M407 300 L350 345 L350 372" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+<path d="M268 392 L282 458 L398 458 L412 392" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+<rect x="276" y="416" width="128" height="40" fill="var(--urine)"/>
+<g id="parts"></g>
+<text x="486" y="60">Blood (capillary side)</text>
+<text x="486" y="124">Glomerular filter</text>
+<text x="486" y="214">Proximal tubule cells</text>
+<text x="486" y="330">Tubular lumen to urine</text>
+<text x="486" y="440">Urine</text>
+</svg>
+</div>
+<div id="leg"></div>
+<div class="cards">
+<div class="card"><small>Major urine protein</small><b id="mp"></b></div>
+<div class="card"><small>Excretion (g/24 h)</small><b id="ex"></b></div>
+<div class="card"><small>Particles reaching urine</small><b id="ct">0</b></div>
+</div>
+<button id="pp">Pause</button>
+</main>
+<script>
+var NS='http://www.w3.org/2000/svg';
+var SP={a:{n:'Albumin (negatively charged)',c:'#534AB7',r:5.5},i:{n:'IgG (large)',c:'#D85A30',r:8},s:{n:'Small protein (lysozyme, β2-microglobulin)',c:'#1D9E75',r:3},l:{n:'Light chains',c:'#BA7517',r:3.5}};
+var MODES=[
+{t:'Normal',d:'The negatively charged filter repels albumin, IgG is too large to cross, and proximal tubule cells recapture nearly all small proteins.',mp:'Albumin, uromucoid',g:'< 0.15',sp:{a:.08,i:.03,s:.1,l:0},ps:{a:.04,i:0,s:.9,l:0},re:{a:.9,i:.9,s:.97,l:.9}},
+{t:'Loss of charge barrier',d:'Filter charge is lost (the minus signs disappear), so albumin leaks through. IgG is still held back by size. Tubules reabsorb some, but not all.',mp:'Albumin, transferrin',g:'0.15–20',sp:{a:.08,i:.03,s:.1,l:0},ps:{a:.6,i:.03,s:.9,l:0},re:{a:.8,i:.9,s:.97,l:.9}},
+{t:'Loss of size barrier',d:'Pores are enlarged, so albumin and IgG both cross and overwhelm tubular reuptake.',mp:'Albumin, transferrin, IgG',g:'0.15–20',sp:{a:.08,i:.03,s:.1,l:0},ps:{a:.6,i:.5,s:.9,l:0},re:{a:.8,i:.8,s:.97,l:.9}},
+{t:'Proximal tubular dysfunction',d:'The filter is intact, but damaged tubule cells (crossed out) cannot endocytose small proteins, so they spill into urine.',mp:'β2-microglobulin, lysozyme, albumin',g:'0.15–3',sp:{a:.08,i:.03,s:.1,l:0},ps:{a:.04,i:0,s:.9,l:0},re:{a:.05,i:.05,s:.05,l:.05}},
+{t:'Overload proteinuria',d:'The filter is normal, but a flood of small proteins (e.g. light chains) saturates tubular reuptake capacity.',mp:'Light chains, albumin',g:'0.5–5',sp:{a:.08,i:.03,s:.1,l:.45},ps:{a:.04,i:0,s:.9,l:.9},re:{a:.9,i:.9,s:.97,l:.35}}];
+var cur=0,parts=[],urine=[],count=0,paused=false,layer=document.getElementById('parts');
+var tabs=document.getElementById('tabs');
+MODES.forEach(function(m,i){var b=document.createElement('button');b.textContent=m.t;b.onclick=function(){setMode(i)};tabs.appendChild(b)});
+var leg=document.getElementById('leg');
+for(var k in SP){leg.innerHTML+='<span><svg width="16" height="16" style="width:16px"><circle cx="8" cy="8" r="'+Math.min(SP[k].r,7)+'" fill="'+SP[k].c+'"/></svg>'+SP[k].n+'</span>'}
+var filt=document.getElementById('filt'),rects=[],minus=[];
+for(var j=0;j<9;j++){var x=235+j*23.5;var r=document.createElementNS(NS,'rect');r.setAttribute('x',x);r.setAttribute('y',112);r.setAttribute('width',16);r.setAttribute('height',10);r.setAttribute('rx',2);r.setAttribute('fill','var(--filt)');filt.appendChild(r);rects.push(r);
+var ln=document.createElementNS(NS,'line');ln.setAttribute('x1',x+4);ln.setAttribute('x2',x+12);ln.setAttribute('y1',117);ln.setAttribute('y2',117);ln.setAttribute('stroke','var(--card)');ln.setAttribute('stroke-width',1.5);filt.appendChild(ln);minus.push(ln)}
+var cg=document.getElementById('cells'),xs=[];
+for(var s=0;s<2;s++)for(var q=0;q<4;q++){var cx=s?409:235,cy=128+q*44;var rc=document.createElementNS(NS,'rect');rc.setAttribute('x',cx);rc.setAttribute('y',cy);rc.setAttribute('width',36);rc.setAttribute('height',40);rc.setAttribute('rx',3);rc.setAttribute('fill','var(--bg)');rc.setAttribute('stroke','var(--line)');cg.appendChild(rc);
+var g=document.createElementNS(NS,'path');g.setAttribute('d','M'+(cx+8)+' '+(cy+8)+'L'+(cx+28)+' '+(cy+32)+'M'+(cx+28)+' '+(cy+8)+'L'+(cx+8)+' '+(cy+32));g.setAttribute('stroke','var(--danger)');g.setAttribute('stroke-width',2);g.setAttribute('fill','none');cg.appendChild(g);xs.push(g)}
+function setMode(i){cur=i;var m=MODES[i];
+Array.prototype.forEach.call(tabs.children,function(b,j){b.className=j==i?'on':''});
+document.getElementById('desc').textContent=m.d;document.getElementById('mp').textContent=m.mp;document.getElementById('ex').textContent=m.g;
+parts.concat(urine).forEach(function(p){layer.removeChild(p.el)});parts=[];urine=[];count=0;document.getElementById('ct').textContent=0;
+minus.forEach(function(l){l.style.opacity=i==1?0:1});
+rects.forEach(function(r,j){r.setAttribute('width',i==2?(j%2?3:6):16);r.style.opacity=i==2?.5:1;r.setAttribute('transform',i==2?'translate(5 0)':'')});
+xs.forEach(function(g){g.style.opacity=i==3?1:0})}
+function mk(k,x,y){var el=document.createElementNS(NS,'circle');el.setAttribute('r',SP[k].r);el.setAttribute('fill',SP[k].c);el.setAttribute('cx',x);el.setAttribute('cy',y);layer.appendChild(el);return el}
+function rm(p){layer.removeChild(p.el);parts.splice(parts.indexOf(p),1)}
+function tick(){if(!paused){var m=MODES[cur];
+for(var k in SP){if(Math.random()<m.sp[k]){var x=215+Math.random()*250;parts.push({k:k,x:x,y:26,vx:(Math.random()-.5)*.4,vy:.5+Math.random()*.3,st:'blood',el:mk(k,x,26),o:1,t:0})}}
+parts.slice().forEach(function(p){p.t++;
+if(p.st=='blood'){p.x+=p.vx;p.y+=p.vy;if(p.x<215||p.x>465)p.vx*=-1;
+if(p.y>=100){if(p.x>235&&p.x<445&&Math.random()<m.ps[p.k]){p.st='lumen';p.tx=288+Math.random()*104;p.ab=Math.random()<m.re[p.k];p.ay=150+Math.random()*130;p.vy=1.1}else{p.st='away';p.vx=(p.x<340?-1:1)*1.1;p.vy=-.9}}}
+else if(p.st=='away'){p.x+=p.vx;p.y+=p.vy;if(p.y<22){rm(p);return}}
+else if(p.st=='lumen'){p.x+=(p.tx-p.x)*.08+Math.sin(p.t/9)*.3;p.y+=p.vy;if(p.ab&&p.y>=p.ay){p.st='absorb';p.wx=Math.random()<.5?253:427}else if(p.y>=300){p.st='funnel'}}
+else if(p.st=='absorb'){p.x+=(p.wx-p.x)*.1;p.y+=.25;if(Math.abs(p.wx-p.x)<4){p.o-=.06;p.el.setAttribute('opacity',Math.max(p.o,0));if(p.o<=0){rm(p);return}}}
+else if(p.st=='funnel'){p.x+=(340-p.x)*.1;p.y+=1.4;if(p.y>=370){p.st='drop';p.lx=292+Math.random()*96;p.ly=424+Math.random()*26}}
+else if(p.st=='drop'){p.x+=(p.lx-p.x)*.07;p.y+=2;if(p.y>=p.ly){parts.splice(parts.indexOf(p),1);urine.push(p);count++;document.getElementById('ct').textContent=count;if(urine.length>170){var o=urine.shift();layer.removeChild(o.el)}}}
+p.el.setAttribute('cx',p.x);p.el.setAttribute('cy',p.y)})}
+requestAnimationFrame(tick)}
+document.getElementById('pp').onclick=function(){paused=!paused;this.textContent=paused?'Play':'Pause'};
+setMode(0);tick();
+</script>
+</body>
+</html>
